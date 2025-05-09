@@ -36,3 +36,12 @@ def test_create_note_success(test_app, monkeypatch):
     )
     assert response.status_code == 201
     assert response.json() == test_response_payload
+
+
+def test_create_note_invalid_json(test_app):
+
+    response = test_app.post(
+        "/notes",
+        content=json.dumps({}),
+    )
+    assert response.status_code == 422
