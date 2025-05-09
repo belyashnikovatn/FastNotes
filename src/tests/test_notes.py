@@ -151,3 +151,33 @@ def test_update_note_success(test_app, monkeypatch):
         "description": "This is an updated test note.",
         "created_at": "2023-10-01T00:00:00",
     }
+
+
+@pytest.mark.parametrize(
+    "note_id, payload, status_code",
+    [
+        (1, {}, 422),
+        (1, {"description": "bar"}, 422),
+        (
+            999,
+            {
+                "title": "Updated Note",
+                "description": "This is an updated test note.",
+            },
+            404,
+        ),
+    ],
+)
+def test_update_note_invalid(
+    test_app, monkeypatch, note_id, payload, status_code
+):
+    async def mock_get(note_id):
+        return None
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    response = test_app.put(
+        f"/notes/{note_id}",
+        json=payload,
+    )
+    assert response.status_code == status_code
