@@ -238,3 +238,6 @@ def test_delete_note_not_found(test_app, monkeypatch):
     response = test_app.delete("/notes/999")
     assert response.status_code == 404
     assert response.json() == {"detail": "Note not found"}
+
+    response = test_app.delete("/notes/0")
+    assert response.status_code == 422

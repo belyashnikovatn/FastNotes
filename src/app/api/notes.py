@@ -66,7 +66,14 @@ async def update_note(
 
 
 @router.delete("/{note_id}", response_model=NoteDB, status_code=200)
-async def delete_note(note_id: int):
+async def delete_note(
+    note_id: int = Path(
+        ...,
+        gt=0,
+        title="The ID of the note to delete",
+        description="Must be a positive integer",
+    )
+):
     """
     Delete a note by ID.
     """
