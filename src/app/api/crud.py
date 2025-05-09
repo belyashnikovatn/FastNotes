@@ -22,3 +22,16 @@ async def get_all():
     query = notes.select()
     notes_list = await database.fetch_all(query=query)
     return notes_list
+
+
+async def put(note_id: int, payload: NoteSchema):
+    query = (
+        notes.update()
+        .where(notes.c.id == note_id)
+        .values(title=payload.title, description=payload.description)
+        .returning(
+            notes.c.id, notes.c.title, notes.c.description, notes.c.created_at
+        )
+    )
+    updated_note = await database.fetch_one(query=query)
+    return updated_note

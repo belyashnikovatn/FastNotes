@@ -114,3 +114,40 @@ def test_read_all_notes_empty(test_app, monkeypatch):
     response = test_app.get("/notes")
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_update_note_success(test_app, monkeypatch):
+    async def mock_get(note_id):
+        return NoteDB(
+            id=1,
+            title="Test Note",
+            description="This is a test note.",
+            created_at=datetime(2023, 10, 1, 0, 0),
+        )
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    async def mock_put(note_id, payload):
+        return NoteDB(
+            id=1,
+            title=payload.title,
+            description=payload.description,
+            created_at=datetime(2023, 10, 1, 0, 0),
+        )
+
+    monkeypatch.setattr(crud, "put", mock_put)
+
+    response = test_app.put(
+        "/notes/1",
+        json={
+            "title": "Updated Note",
+            "description": "This is an updated test note.",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "title": "Updated Note",
+        "description": "This is an updated test note.",
+        "created_at": "2023-10-01T00:00:00",
+    }
