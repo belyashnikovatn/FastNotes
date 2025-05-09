@@ -46,6 +46,18 @@ def test_create_note_invalid_json(test_app):
     )
     assert response.status_code == 422
 
+    response = test_app.post(
+        "/notes",
+        content=json.dumps({"title": "Test Note"}),
+    )
+    assert response.status_code == 422
+
+    response = test_app.post(
+        "/notes",
+        content=json.dumps({"title": "1", "description": "2"}),
+    )
+    assert response.status_code == 422
+
 
 def test_read_note_success(test_app, monkeypatch):
     test_response_payload = {
@@ -164,14 +176,11 @@ def test_update_note_success(test_app, monkeypatch):
     [
         (1, {}, 422),
         (1, {"description": "bar"}, 422),
-        (
-            999,
-            {
-                "title": "Updated Note",
-                "description": "This is an updated test note.",
-            },
-            404,
-        ),
+        (999, {"title": "foo", "description": "bar"}, 404),
+        (1, {"title": "1", "description": "123"}, 422),
+        (1, {"title": "123", "description": "1"}, 422),
+        (0, {"title": "foo", "description": "bar."}, 422),
+        ("abc", {"title": "foo", "description": "bar"}, 422),
     ],
 )
 def test_update_note_invalid(

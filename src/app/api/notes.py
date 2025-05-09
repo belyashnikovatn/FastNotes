@@ -45,7 +45,15 @@ async def read_all_notes():
 
 
 @router.put("/{note_id}", response_model=NoteDB, status_code=200)
-async def update_note(note_id: int, payload: NoteSchema):
+async def update_note(
+    payload: NoteSchema,
+    note_id: int = Path(
+        ...,
+        gt=0,
+        title="The ID of the note to update",
+        description="Must be a positive integer",
+    ),
+):
     """
     Update a note by ID.
     """
