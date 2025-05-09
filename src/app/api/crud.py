@@ -10,3 +10,15 @@ async def post(payload: NoteSchema):
     get_query = notes.select().where(notes.c.id == note_id)
     note = await database.fetch_one(query=get_query)
     return note
+
+
+async def get(note_id: int):
+    query = notes.select().where(notes.c.id == note_id)
+    note = await database.fetch_one(query=query)
+    return note
+
+
+async def get_all():
+    query = notes.select()
+    notes_list = await database.fetch_all(query=query)
+    return notes_list
