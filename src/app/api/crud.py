@@ -35,3 +35,8 @@ async def put(note_id: int, payload: NoteSchema):
     )
     updated_note = await database.fetch_one(query=query)
     return updated_note
+
+
+async def delete(note_id: int):
+    query = notes.delete().where(notes.c.id == note_id)
+    return await database.execute(query=query)

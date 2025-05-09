@@ -181,3 +181,45 @@ def test_update_note_invalid(
         json=payload,
     )
     assert response.status_code == status_code
+
+
+def test_delete_note_success(test_app, monkeypatch):
+    async def mock_get(note_id):
+        return NoteDB(
+            id=1,
+            title="Test Note",
+            description="This is a test note.",
+            created_at=datetime(2023, 10, 1, 0, 0),
+        )
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    async def mock_delete(note_id):
+        return NoteDB(
+            id=1,
+            title="Test Note",
+            description="This is a test note.",
+            created_at=datetime(2023, 10, 1, 0, 0),
+        )
+
+    monkeypatch.setattr(crud, "delete", mock_delete)
+
+    response = test_app.delete("/notes/1")
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 1,
+        "title": "Test Note",
+        "description": "This is a test note.",
+        "created_at": "2023-10-01T00:00:00",
+    }
+
+
+def test_delete_note_not_found(test_app, monkeypatch):
+    async def mock_get(note_id):
+        return None
+
+    monkeypatch.setattr(crud, "get", mock_get)
+
+    response = test_app.delete("/notes/999")
+    assert response.status_code == 404
+    assert response.json() == {"detail": "Note not found"}
